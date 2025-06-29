@@ -1,0 +1,60 @@
+/* groovylint-disable-next-line CompileStatic */
+pipeline {
+    agent { docker { image 'rust:latest' } }
+    environment {
+        // DATABASE_URL = credentials('db')
+        PORT = '8000'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/asemqaffaf/actix.git'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'cargo build --release'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                sh 'cargo test'
+            }
+        }
+
+        stage('Deploy - Run Binary Locally') {
+            steps {
+                script {
+                    def appName = 'actix'
+                    def binaryPath = "target/release/${appName}"
+
+                    // Ensure the binary exists
+                    sh "test -f ${binaryPath}"
+
+                    sh "pkill -f ${appName} || true" 
+
+
+                    sh "BUILD_ID=dontKillMe nohup ./${binaryPath} > app.log 2>&1 &"
+
+                    echo "Actix app started directly on localhost, accessible via http://localhost:${env.PORT} (if your firewall allows)"
+                    echo 'Check Jenkins workspace for app.log for output.'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+        }
+        success {
+            echo 'Pipeline finished successfully!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
+    }
+}
