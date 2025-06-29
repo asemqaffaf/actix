@@ -12,27 +12,24 @@ pipeline {
             }
         }
 
-        // --- ADD THIS DEBUG STAGE ---
         stage('Debug Jenkins Environment') {
             steps {
                 sh 'echo "Current user: $(whoami)"'
                 sh 'echo "Current groups: $(groups)"'
                 sh 'echo "Current PATH: $PATH"'
-                sh 'ls -l /usr/local/bin/docker || echo "Docker not found at /usr/local/bin/docker"' // Check a common path
-                sh 'ls -l /usr/bin/docker || echo "Docker not found at /usr/bin/docker"' // Check another common path
+                sh 'which docker || echo "Docker not found in PATH"'
             }
         }
-        // --- END DEBUG STAGE ---
 
         stage('Build') {
             steps {
-                sh 'cargo build --release'
+                sh 'docker run --rm -v "$WORKSPACE:/app" -w /app rust:latest cargo build --release'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'cargo test'
+                sh 'docker run --rm -v "$WORKSPACE:/app" -w /app rust:latest cargo test'
             }
         }
 
