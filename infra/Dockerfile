@@ -13,8 +13,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 COPY --from=builder /app/target/release/actix /app/actix
 
+# Set the PORT environment variable for the application
+ENV PORT=3000
+
 # Expose the port your Actix app listens on
 EXPOSE 3000
 
+# Make the binary executable
+RUN chmod +x /app/actix
+
 # Command to run your application
-CMD ["./actix"]
+ENTRYPOINT ["/app/actix"]
+CMD ["cargo run start"]

@@ -41,7 +41,14 @@ pipeline {
                     sh "docker stop ${appName} || true"
                     sh "docker rm ${appName} || true"
                     sh "docker run -d --name ${appName} -p ${env.PORT}:${env.PORT} ${appName}:latest"
-                    echo 'Actix app deployed via Docker on localhost, accessible via http://localhost:${env.PORT}'
+                    
+                    // Wait for container to start and inspect
+                    sh 'sleep 3'
+                    sh 'docker ps -a | grep actix'
+                    sh 'docker logs actix'
+                    sh 'docker inspect actix | grep -A 5 "NetworkSettings"'
+                    
+                    echo "Actix app deployed via Docker on localhost, accessible via http://localhost:${env.PORT}"
                 }
             }
         }
