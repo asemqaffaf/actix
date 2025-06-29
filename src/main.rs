@@ -29,11 +29,11 @@ async fn main() -> std::io::Result<()> {
         .and_then(|s: String| s.parse().ok())
         .unwrap_or(3000);
 
-    println!("http://127.0.0.1:{}", port);
+    println!("http://0.0.0.0:{}", port);
 
     HttpServer::new(|| App::new().service(hello).service(echo))
         .workers(num_cpus::get())
-        .bind(("127.0.0.1", port))?
+        .bind(("0.0.0.0", port))?
         .run()
         .await
 }

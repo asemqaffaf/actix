@@ -13,8 +13,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
 WORKDIR /app
 COPY --from=builder /app/target/release/actix /app/actix
 
-# Expose the port your Actix app listens on (e.g., 8000)
-EXPOSE 8000
+# Expose the port your Actix app listens on
+EXPOSE 3000
 
 # Command to run your application
 CMD ["./actix"]
