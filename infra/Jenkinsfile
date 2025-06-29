@@ -2,15 +2,15 @@
 pipeline {
     agent any  // Run on the Jenkins host instead of inside a Docker container
     environment {
-        PORT = '8000'
+        PORT = '3000'
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/asemqaffaf/actix.git'
-            }
-        }
+        // stage('Checkout') {
+        //     steps {
+        //         git branch: 'main', url: 'https://github.com/asemqaffaf/actix.git'
+        //     }
+        // }
 
         stage('Debug Jenkins Environment') {
             steps {
@@ -40,8 +40,8 @@ pipeline {
                     sh "docker build -t ${appName}:latest -f infra/Dockerfile ."
                     sh "docker stop ${appName} || true"
                     sh "docker rm ${appName} || true"
-                    sh "docker run -d --name ${appName} -p 80:${env.PORT} ${appName}:latest"
-                    echo 'Actix app deployed via Docker on localhost, accessible via http://localhost:80'
+                    sh "docker run -d --name ${appName} -p ${env.PORT}:${env.PORT} ${appName}:latest"
+                    echo 'Actix app deployed via Docker on localhost, accessible via http://localhost:${env.PORT}'
                 }
             }
         }
