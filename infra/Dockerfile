@@ -7,7 +7,7 @@ RUN cargo build --release
 
 # Stage 2: Create a minimal runtime image
 # Use a minimal base image for the final artifact
-FROM debian:stretch-slim
+FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
