@@ -1,8 +1,7 @@
-/* groovylint-disable-next-line CompileStatic */
+// infra/Jenkinsfile
 pipeline {
     agent { docker { image 'rust:latest' } }
     environment {
-        // DATABASE_URL = credentials('db')
         PORT = '8000'
     }
 
@@ -12,6 +11,18 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/asemqaffaf/actix.git'
             }
         }
+
+        // --- ADD THIS DEBUG STAGE ---
+        stage('Debug Jenkins Environment') {
+            steps {
+                sh 'echo "Current user: $(whoami)"'
+                sh 'echo "Current groups: $(groups)"'
+                sh 'echo "Current PATH: $PATH"'
+                sh 'ls -l /usr/local/bin/docker || echo "Docker not found at /usr/local/bin/docker"' // Check a common path
+                sh 'ls -l /usr/bin/docker || echo "Docker not found at /usr/bin/docker"' // Check another common path
+            }
+        }
+        // --- END DEBUG STAGE ---
 
         stage('Build') {
             steps {
@@ -25,22 +36,15 @@ pipeline {
             }
         }
 
-        stage('Deploy - Run Binary Locally') {
+        stage('Deploy - Docker on Localhost') {
             steps {
                 script {
                     def appName = 'actix'
-                    def binaryPath = "target/release/${appName}"
-
-                    // Ensure the binary exists
-                    sh "test -f ${binaryPath}"
-
-                    sh "pkill -f ${appName} || true" 
-
-
-                    sh "BUILD_ID=dontKillMe nohup ./${binaryPath} > app.log 2>&1 &"
-
-                    echo "Actix app started directly on localhost, accessible via http://localhost:${env.PORT} (if your firewall allows)"
-                    echo 'Check Jenkins workspace for app.log for output.'
+                    sh "docker build -t ${appName}:latest -f infra/Dockerfile ."
+                    sh "docker stop ${appName} || true"
+                    sh "docker rm ${appName} || true"
+                    sh "docker run -d --name ${appName} -p 80:${env.PORT} ${appName}:latest"
+                    echo 'Actix app deployed via Docker on localhost, accessible via http://localhost:80'
                 }
             }
         }
@@ -48,7 +52,11 @@ pipeline {
 
     post {
         always {
-            deleteDir()
+            script {
+                node {
+                    deleteDir()
+                }
+            }
         }
         success {
             echo 'Pipeline finished successfully!'
