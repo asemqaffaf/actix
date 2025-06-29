@@ -1,0 +1,4 @@
+
+[alias]
+lint = "clippy -- -D warnings"
+checkfmt = "fmt -- --check"
