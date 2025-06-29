@@ -1,8 +1,9 @@
 # Stage 1: Build the Rust application
 FROM rust:latest as builder
-WORKDIR /app
+WORKDIR /workspace
 COPY . .
 # Compile in release mode
+WORKDIR /workspace/app
 RUN cargo build --release
 
 # Stage 2: Create a minimal runtime image

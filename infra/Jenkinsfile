@@ -23,13 +23,15 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'docker run --rm -v "$WORKSPACE:/app" -w /app rust:latest cargo build --release'
+                // Change working directory to where Cargo.toml is located
+                sh 'docker run --rm -v "$WORKSPACE:/workspace" -w /workspace/app rust:latest cargo build --release'
             }
         }
 
         stage('Test') {
             steps {
-                sh 'docker run --rm -v "$WORKSPACE:/app" -w /app rust:latest cargo test'
+                // Change working directory to where Cargo.toml is located
+                sh 'docker run --rm -v "$WORKSPACE:/workspace" -w /workspace/app rust:latest cargo test'
             }
         }
 
