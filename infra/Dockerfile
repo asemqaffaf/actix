@@ -12,7 +12,7 @@ FROM debian:bullseye-slim
 RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates openssl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY --from=builder /app/target/release/actix /app/actix
+COPY --from=builder /workspace/app/target/release/actix /app/actix
 
 # Set the PORT environment variable for the application
 ENV PORT=3000
@@ -25,4 +25,4 @@ RUN chmod +x /app/actix
 
 # Command to run your application
 ENTRYPOINT ["/app/actix"]
-CMD ["cargo run start"]
+CMD []
