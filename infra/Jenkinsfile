@@ -1,6 +1,6 @@
 // infra/Jenkinsfile
 pipeline {
-    agent { docker { image 'rust:latest' } }
+    agent any  // Run on the Jenkins host instead of inside a Docker container
     environment {
         PORT = '8000'
     }
