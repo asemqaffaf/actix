@@ -2,11 +2,15 @@
 FROM rust:latest as builder
 WORKDIR /workspace
 
-# Install musl-tools for static linking
+# Install musl-tools for static linking and PostgreSQL dependencies
 RUN apt-get update && \
-    apt-get install -y musl-tools && \
+    apt-get install -y musl-tools gcc-aarch64-linux-gnu musl-dev libpq-dev pkg-config && \
     rustup target add aarch64-unknown-linux-musl && \
     rm -rf /var/lib/apt/lists/*
+    
+# Set up environment for cross-compilation
+ENV CC_aarch64_unknown_linux_musl=aarch64-linux-gnu-gcc \
+    CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
 
 COPY . .
 # Compile in release mode with static linking
