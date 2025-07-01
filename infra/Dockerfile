@@ -19,7 +19,7 @@ FROM alpine:latest
 RUN apk add --no-cache ca-certificates
 
 WORKDIR /app
-COPY --from=builder /workspace/app/target/aarch64-unknown-linux-musl/release/actix /app/actix
+COPY --from=builder /workspace/app/target/aarch64-unknown-linux-musl/release/actix_app /app/actix_app
 
 # Set the PORT environment variable for the application
 ENV PORT=3000
