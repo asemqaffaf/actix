@@ -28,8 +28,8 @@ ENV PORT=3000
 EXPOSE 3000
 
 # Make the binary executable
-RUN chmod +x /app/actix
+RUN chmod +x /app/actix_app
 
 # Command to run your application
-ENTRYPOINT ["/app/actix"]
+ENTRYPOINT ["/app/actix_app"]
 CMD []

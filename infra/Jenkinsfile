@@ -38,7 +38,7 @@ pipeline {
         stage('Deploy - Docker on Localhost') {
             steps {
                 script {
-                    def appName = 'actix'
+                    def appName = 'actix_app'
                     sh "docker build -t ${appName}:latest -f infra/Dockerfile ."
                     sh "docker stop ${appName} || true"
                     sh "docker rm ${appName} || true"
@@ -46,9 +46,9 @@ pipeline {
                     
                     // Wait for container to start and inspect
                     sh 'sleep 3'
-                    sh 'docker ps -a | grep actix'
-                    sh 'docker logs actix'
-                    sh 'docker inspect actix | grep -A 5 "NetworkSettings"'
+                    sh 'docker ps -a | grep actix_app'
+                    sh 'docker logs actix_app'
+                    sh 'docker inspect actix_app | grep -A 5 "NetworkSettings"'
                     
                     echo "Actix app deployed via Docker on localhost, accessible via http://localhost:${env.PORT}"
                 }
